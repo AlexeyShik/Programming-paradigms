@@ -3,61 +3,9 @@ package expression.parser;
 import expression.*;
 import expression.exceptions.*;
 import expression.exceptions.IllegalArgumentException;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import static expression.parser.Utility.*;
 
 public class ExpressionParser extends BaseParser implements Parser {
-    private static final int MAX_PRIORITY = 4;
-    private static boolean needOperation = false;
-    private static final Map<String, Integer> PRIORITIES = Map.of(
-            "+", 2,
-            "-", 2,
-            "*", 1,
-            "/", 1,
-            "<<", 3,
-            ">>", 3,
-            "**", 0,
-            "//", 0,
-            ")", MAX_PRIORITY
-    );
-    private static final Map<String, Class<? extends Operation>> BINARY = Map.of(
-            "+", CheckedAdd.class,
-            "-", CheckedSubtract.class,
-            "*", CheckedMultiply.class,
-            "/", CheckedDivide.class,
-            "//", CheckedLog.class,
-            "**", CheckedPow.class,
-            "<<", LeftShift.class,
-            ">>", RightShift.class
-    );
-    private static final Map<String, Class<? extends Operation>> UNARY = Map.of(
-            "log2", CheckedLog2.class,
-            "pow2", CheckedPow2.class,
-            "-", CheckedNegate.class,
-            "abs", Abs.class,
-            "square", Square.class
-    );
-    private static Map<Character, String> FIRST_CHAR_TO_OPERATION = new HashMap<>();
-    static {
-        FIRST_CHAR_TO_OPERATION.put('l', "log2");
-        FIRST_CHAR_TO_OPERATION.put('p', "pow2");
-        FIRST_CHAR_TO_OPERATION.put('s', "square");
-        FIRST_CHAR_TO_OPERATION.put('a', "abs");
-        FIRST_CHAR_TO_OPERATION.put('>', ">>");
-        FIRST_CHAR_TO_OPERATION.put('<', "<<");
-        FIRST_CHAR_TO_OPERATION.put(')', ")");
-        FIRST_CHAR_TO_OPERATION.put('(', "(");
-        FIRST_CHAR_TO_OPERATION.put('/', "/");
-        FIRST_CHAR_TO_OPERATION.put('*', "*");
-        FIRST_CHAR_TO_OPERATION.put('-', "-");
-        FIRST_CHAR_TO_OPERATION.put('+', "+");
-    }
-    private final Set<String> VARIABLES = Set.of(
-            "x", "y", "z"
-    );
-
     private String parseToken() throws ParsingException {
         skipWhitespace();
         if (Character.isDigit(ch)) {
@@ -70,6 +18,9 @@ public class ExpressionParser extends BaseParser implements Parser {
         } else {
             StringBuilder str = new StringBuilder();
             while (!isEndOfInput() && !checkOperation()) {
+                if (ch != '\0' && !USABLE_SYMBOLS.contains(ch)) {
+                    throw new UnexpectedSymbolException("Unexpected symbol expected", source.getPos());
+                }
                 str.append(ch);
                 nextChar();
                 skipWhitespace();
@@ -78,7 +29,7 @@ public class ExpressionParser extends BaseParser implements Parser {
         }
     }
 
-    private TripleExpression parseSimpleExpression() throws ExpressionException, ParsingException {
+    private TripleExpression parseSimpleExpression() throws ParsingException {
         String token = parseToken();
         if (token.isEmpty()) {
             throw new IllegalArgumentException("No argument expected", source.getPos());
@@ -106,14 +57,11 @@ public class ExpressionParser extends BaseParser implements Parser {
                     return buildNegativeConst(current);
                 }
             }
-            if (!Character.isWhitespace(ch) && ch != '-' && ch != '(' && !token.equals("-")) {
-                throw new IllegalArgumentException("Unexpected variable", source.getPos() - token.length() + 1);
-            }
             return getUnaryExpression((Operation) parseSimpleExpression(), token);
         }
     }
 
-    private TripleExpression parseBinaryExpression(int priority) throws ExpressionException, ParsingException{
+    private TripleExpression parseBinaryExpression(int priority) throws ParsingException{
         TripleExpression left = parseSimpleExpression();
         while (true) {
             needOperation = true;
@@ -136,8 +84,9 @@ public class ExpressionParser extends BaseParser implements Parser {
         }
     }
 
-    public TripleExpression parse(String expression) throws Exception {
+    public TripleExpression parse(String expression) throws ParsingException {
         setSource(new StringSource(expression));
+        needOperation = false;
         TripleExpression ans = parseBinaryExpression(MAX_PRIORITY);
         if (!isEndOfInput()) {
             throw new ExtraSymbolException("Unexpected closing bracket", source.getPos());
@@ -145,7 +94,7 @@ public class ExpressionParser extends BaseParser implements Parser {
         return ans;
     }
 
-    private TripleExpression getUnaryExpression(Operation argument, String operation) throws ExpressionException, ParsingException {
+    private TripleExpression getUnaryExpression(Operation argument, String operation) throws ParsingException {
         if (operation.equals("-") && argument instanceof Const)
             return new Const(-1 * argument.evaluate(0, 0, 0));
         try {

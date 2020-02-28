@@ -1,8 +1,5 @@
 package expression;
 
-import expression.exceptions.DivideByZeroException;
-import expression.exceptions.OverflowException;
-
 public class CheckedLog extends AbstractBinaryOperation {
     public CheckedLog(Operation first, Operation second) {
         super(first, second, "//");
@@ -27,14 +24,14 @@ public class CheckedLog extends AbstractBinaryOperation {
     }
 
     @Override
-    public int evaluate(int x) throws OverflowException, DivideByZeroException {
+    public int evaluate(int x) {
         int left = firstOperand.evaluate(x);
         int right = secondOperand.evaluate(x);
         return checkException(left, right);
     }
 
     @Override
-    public int evaluate(int x, int y, int z) throws OverflowException, DivideByZeroException {
+    public int evaluate(int x, int y, int z) {
         int left = firstOperand.evaluate(x, y, z);
         int right = secondOperand.evaluate(x, y, z);
         return checkException(left, right);

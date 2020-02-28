@@ -1,15 +1,12 @@
 package expression;
 
-import expression.exceptions.DivideByZeroException;
-import expression.exceptions.OverflowException;
-
 public class RightShift extends AbstractBinaryOperation {
     public RightShift(Operation a, Operation b) {
         super(a, b, ">>");
     }
 
     @Override
-    public int evaluate(int x) throws OverflowException, DivideByZeroException {
+    public int evaluate(int x) {
         return firstOperand.evaluate(x) >> secondOperand.evaluate(x);
     }
 
@@ -19,7 +16,7 @@ public class RightShift extends AbstractBinaryOperation {
     }
 
     @Override
-    public int evaluate(int x, int y, int z) throws OverflowException, DivideByZeroException {
+    public int evaluate(int x, int y, int z) {
         return firstOperand.evaluate(x, y, z) >> secondOperand.evaluate(x, y, z);
     }
 

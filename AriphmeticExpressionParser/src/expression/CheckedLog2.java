@@ -1,8 +1,5 @@
 package expression;
 
-import expression.exceptions.DivideByZeroException;
-import expression.exceptions.OverflowException;
-
 public class CheckedLog2 extends AbstractUnaryOperation implements Operation, Expression, TripleExpression, DoubleExpression {
     public CheckedLog2(Operation a) {
         super(a, "log2");
@@ -23,7 +20,7 @@ public class CheckedLog2 extends AbstractUnaryOperation implements Operation, Ex
     }
 
     @Override
-    public int evaluate(int x) throws OverflowException, DivideByZeroException {
+    public int evaluate(int x) {
         int current = operation.evaluate(x);
         if (Settings.exceptions)
             checkExceptions(current);
@@ -36,7 +33,7 @@ public class CheckedLog2 extends AbstractUnaryOperation implements Operation, Ex
     }
 
     @Override
-    public int evaluate(int x, int y, int z) throws OverflowException, DivideByZeroException {
+    public int evaluate(int x, int y, int z) {
         int current = operation.evaluate(x, y ,z);
         if (Settings.exceptions)
             checkExceptions(current);

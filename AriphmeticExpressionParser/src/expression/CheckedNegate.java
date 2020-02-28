@@ -1,6 +1,5 @@
 package expression;
 
-import expression.exceptions.DivideByZeroException;
 import expression.exceptions.OverflowException;
 
 public class CheckedNegate implements Operation, TripleExpression, DoubleExpression, Expression {
@@ -27,7 +26,7 @@ public class CheckedNegate implements Operation, TripleExpression, DoubleExpress
     }
 
     @Override
-    public int evaluate(int x) throws OverflowException, DivideByZeroException {
+    public int evaluate(int x) {
         return -expression.evaluate(x);
     }
 
@@ -37,14 +36,14 @@ public class CheckedNegate implements Operation, TripleExpression, DoubleExpress
     }
 
     @Override
-    public int evaluate(int x, int y, int z) throws OverflowException, DivideByZeroException {
+    public int evaluate(int x, int y, int z) {
         int argument = expression.evaluate(x, y, z);
         if (Settings.exceptions)
             checkException(argument);
         return -argument;
     }
 
-    private void checkException(int argument) throws OverflowException {
+    private void checkException(int argument) {
         if (argument == Integer.MIN_VALUE)
             throw new OverflowException("Negate", "-" + argument);
     }

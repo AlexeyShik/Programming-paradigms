@@ -1,6 +1,5 @@
 package expression;
 
-import expression.exceptions.DivideByZeroException;
 import expression.exceptions.OverflowException;
 
 public class CheckedPow2 extends AbstractUnaryOperation implements Operation, Expression, TripleExpression, DoubleExpression {
@@ -8,7 +7,7 @@ public class CheckedPow2 extends AbstractUnaryOperation implements Operation, Ex
         super(a, "pow2");
     }
 
-    private void checkExceptions(int argument) throws OverflowException {
+    private void checkExceptions(int argument) {
         if (argument < 0)
             throw new IllegalArgumentException("Non-positive argument in pow2");
         if (argument > 31)
@@ -20,7 +19,7 @@ public class CheckedPow2 extends AbstractUnaryOperation implements Operation, Ex
     }
 
     @Override
-    public int evaluate(int x) throws OverflowException, DivideByZeroException {
+    public int evaluate(int x) {
         int current = operation.evaluate(x);
         if (Settings.exceptions)
             checkExceptions(current);
@@ -33,7 +32,7 @@ public class CheckedPow2 extends AbstractUnaryOperation implements Operation, Ex
     }
 
     @Override
-    public int evaluate(int x, int y, int z) throws OverflowException, DivideByZeroException {
+    public int evaluate(int x, int y, int z) {
         int current = operation.evaluate(x, y, z);
         if (Settings.exceptions)
             checkExceptions(current);

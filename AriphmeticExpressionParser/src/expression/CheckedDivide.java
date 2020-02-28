@@ -8,7 +8,7 @@ public class CheckedDivide extends AbstractBinaryOperation {
         super(first, second, "/");
     }
 
-    private int checkException(int left, int right) throws DivideByZeroException, OverflowException {
+    private int checkException(int left, int right) {
         if (Settings.exceptions) {
             if (right == 0)
                 throw new DivideByZeroException("Divide", left + "/" + right);
@@ -19,14 +19,14 @@ public class CheckedDivide extends AbstractBinaryOperation {
     }
 
     @Override
-    public int evaluate(int x) throws OverflowException, DivideByZeroException {
+    public int evaluate(int x) {
         int left = firstOperand.evaluate(x);
         int right = secondOperand.evaluate(x);
         return checkException(left, right);
     }
 
     @Override
-    public int evaluate(int x, int y, int z) throws OverflowException, DivideByZeroException {
+    public int evaluate(int x, int y, int z) {
         int left = firstOperand.evaluate(x, y, z);
         int right = secondOperand.evaluate(x, y, z);
         return checkException(left, right);

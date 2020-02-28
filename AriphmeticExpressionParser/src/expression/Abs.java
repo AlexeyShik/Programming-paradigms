@@ -1,15 +1,12 @@
 package expression;
 
-import expression.exceptions.DivideByZeroException;
-import expression.exceptions.OverflowException;
-
 public class Abs extends AbstractUnaryOperation implements Operation, Expression, TripleExpression, DoubleExpression {
     public Abs(Operation a) {
         super(a, "Abs");
     }
 
     @Override
-    public int evaluate(int x) throws OverflowException, DivideByZeroException {
+    public int evaluate(int x) {
         return Math.abs(operation.evaluate(x));
     }
 
@@ -19,7 +16,7 @@ public class Abs extends AbstractUnaryOperation implements Operation, Expression
     }
 
     @Override
-    public int evaluate(int x, int y, int z) throws OverflowException, DivideByZeroException {
+    public int evaluate(int x, int y, int z) {
         return Math.abs(operation.evaluate(x, y, z));
     }
 
