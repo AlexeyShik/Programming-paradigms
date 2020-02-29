@@ -31,6 +31,7 @@ public class ArrayQueue {
 
     private void insertKthElement(Object object, int i) {
         //  Pre: object не null && values[i] == null
+        resizeArray();
         values[i] = object;
         size++;
         //  Post: object добавлен на i-й элемент массива, размер массива увеличен
@@ -39,7 +40,6 @@ public class ArrayQueue {
     public void push(Object object) {
         //  Pre: object не null
         assert object != null;
-        resizeArray();
         indexToPop = decrement(indexToPop);
         insertKthElement(object, indexToPop);
         //  Post: values[indexToPop - 1] = добавленный объект
@@ -50,7 +50,6 @@ public class ArrayQueue {
     public void enqueue(Object object) {
         //  Pre: object не null
         assert object != null;
-        resizeArray();
         insertKthElement(object, getIndexToPush());
         //  Post: values[indexToPush - 1] = добавленный объект
         //  Post: объект добавлен в конец очереди,

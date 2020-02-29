@@ -32,6 +32,7 @@ public class ArrayQueueADT {
 
     private static void insertKthElement(ArrayQueueADT queue, Object object, int i) {
         //  Pre: object не null && values[i] == null
+        resizeArray(queue);
         queue.values[i] = object;
         queue.size++;
         //  Post: object добавлен на i-й элемент массива, размер массива увеличен
@@ -40,7 +41,6 @@ public class ArrayQueueADT {
     public static void push(ArrayQueueADT queue, Object object) {
         //  Pre: object не null
         assert object != null;
-        resizeArray(queue);
         queue.indexToPop = decrement(queue, queue.indexToPop);
         insertKthElement(queue, object, queue.indexToPop);
         //  Post: values[indexToPop - 1] = добавленный объект
@@ -51,7 +51,6 @@ public class ArrayQueueADT {
     public static void enqueue(ArrayQueueADT queue, Object object) {
         //  Pre: object не null
         assert object != null;
-        resizeArray(queue);
         insertKthElement(queue, object, getIndexToPush(queue));
         //  Post: values[indexToPush - 1] = добавленный объект
         //  Post: объект добавлен в конец очереди,
