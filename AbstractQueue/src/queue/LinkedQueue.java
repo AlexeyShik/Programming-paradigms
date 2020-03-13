@@ -1,9 +1,8 @@
 package queue;
 
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.Iterator;
 
-public class LinkedQueue extends AbstractQueue implements Queue {
+public class LinkedQueue extends AbstractQueue {
     //  Инвариант структуры:
     //  Элементы хранятся в односвязном списке в порядке добавления
     //  от tail до head, причем:
@@ -19,8 +18,9 @@ public class LinkedQueue extends AbstractQueue implements Queue {
             value = object;
             this.next = next;
         }
-
     }
+
+
     private Node head;
     private Node tail;
 
@@ -54,16 +54,33 @@ public class LinkedQueue extends AbstractQueue implements Queue {
         return ans;
     }
 
-    protected LinkedQueue makeFilterAndPredicate(Predicate<Object> P, Function<Object, Object> F) {
-        LinkedQueue queue = new LinkedQueue();
-        for (Node cur = tail; cur != null; cur = cur.next) {
-            checkPredicateAndApply(queue, cur.value, P, F);
-        }
-        return queue;
+    @Override
+    protected Queue getInstance() {
+        return new LinkedQueue();
     }
 
     @Override
     protected void doClear() {
         head = tail = null;
+    }
+
+    @Override
+    public Iterator<Object> iterator() {
+        return new Iterator<>() {
+            Node cur = tail;
+
+            @Override
+            public boolean hasNext() {
+                return cur != null;
+            }
+
+            @Override
+            public Object next() {
+                assert hasNext();
+                Object value = cur.value;
+                cur = cur.next;
+                return value;
+            }
+        };
     }
 }

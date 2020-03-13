@@ -19,11 +19,11 @@ public interface Queue {
     //  Post: первый элемент очереди был удален
     //  Post: порядок остальныех элементов очереди не изменился
 
-    //  Pre:
+    //  Pre: P != null
     Queue filter(Predicate<Object> P);
     //  Post: Вернет очередь, содержащую все элементы данной, которые удовлетворяют Predicate P
 
-    //  Pre:
+    //  Pre: F != null, результат применения F не null
     Queue map(Function<Object, Object> F);
     //  Post: Вернет очередь, содержащую все элементы данной, к каждому элементу которой была применена Function F
 

@@ -1,9 +1,8 @@
 package queue;
 
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.Iterator;
 
-public class ArrayQueue extends AbstractQueue implements Queue {
+public class ArrayQueue extends AbstractQueue {
     private Object[] values;
     private int indexToPop;
 
@@ -44,6 +43,11 @@ public class ArrayQueue extends AbstractQueue implements Queue {
         return value;
     }
 
+    @Override
+    protected Queue getInstance() {
+        return new ArrayQueue();
+    }
+
     private int increment(int t) {
         //  Pre:
         return (t + 1) % values.length;
@@ -56,17 +60,30 @@ public class ArrayQueue extends AbstractQueue implements Queue {
         //  Post: возвращает индекс, указывающий на элемент массива values перед началом очереди.
     }
 
-    protected ArrayQueue makeFilterAndPredicate(Predicate<Object> P, Function<Object, Object> F) {
-        ArrayQueue queue = new ArrayQueue();
-        for (int i = 0, j = indexToPop; i < size(); ++i, j = increment(j)) {
-            checkPredicateAndApply(queue, values[j], P, F);
-        }
-        return queue;
-    }
-
     @Override
     protected void doClear() {
         values = new Object[2];
         indexToPop = 0;
+    }
+
+    @Override
+    public Iterator<Object> iterator() {
+        return new Iterator<>() {
+            int cur = indexToPop, passed = 0;
+
+            @Override
+            public boolean hasNext() {
+                return passed < size();
+            }
+
+            @Override
+            public Object next() {
+                assert hasNext();
+                Object value = values[cur];
+                cur = increment(cur);
+                passed++;
+                return value;
+            }
+        };
     }
 }

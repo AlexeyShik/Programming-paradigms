@@ -3,7 +3,7 @@ package queue;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class AbstractQueue implements Queue {
+public abstract class AbstractQueue implements Queue, Iterable<Object> {
     private int size;
 
     @Override
@@ -57,23 +57,32 @@ public abstract class AbstractQueue implements Queue {
 
     @Override
     public Queue filter(Predicate<Object> P) {
+        assert P != null;
         return makeFilterAndPredicate(P, Function.identity());
     }
 
     @Override
     public Queue map(Function<Object, Object> F) {
+        assert F != null;
         return makeFilterAndPredicate(object -> true, F);
     }
 
-    void checkPredicateAndApply(Queue queue, Object object, Predicate<Object> P, Function<Object, Object> F) {
-        //  Pre:
-        if (P.test(object)) {
-            queue.enqueue(F.apply(object));
-        }
-        //  Post: Если Predicate P выполнен, то в очередь добавлен результат применения Function F к объекту object
-    }
+    protected abstract Queue getInstance();
 
-    protected abstract Queue makeFilterAndPredicate(Predicate<Object> P, Function<Object, Object> F);
+    //  Pre: P != null, F != null, результат применения F не null
+    private Queue makeFilterAndPredicate(Predicate<Object> P, Function<Object, Object> F) {
+        Queue queue = getInstance();
+        for (Object o : this) {
+            if (P.test(o)) {
+                Object arg = F.apply(o);
+                assert arg != null;
+                queue.enqueue(arg);
+            }
+        }
+        return queue;
+    }
+    //  Post: Вернет очередь, все элементы которой удовлетворяют Predicate P,
+    //  после применения к ним Function F
 
     //  Pre:
     protected abstract void doClear();
