@@ -3,6 +3,8 @@ package expression.generic;
 import expression.exceptions.DivideByZeroException;
 import expression.exceptions.OverflowException;
 
+import java.util.function.Function;
+
 public class IntegerOperator extends AbstractOperator<Integer> {
     public IntegerOperator(boolean flag) {
         needCheckExceptions = flag;
@@ -15,68 +17,74 @@ public class IntegerOperator extends AbstractOperator<Integer> {
 
     @Override
     public Integer add(Integer left, Integer right) {
-        if (needCheckExceptions && ((right > 0 && left > Integer.MAX_VALUE - right)
-                || (right < 0 && left < Integer.MIN_VALUE - right))) {
-            throw new OverflowException("Add", left + "+" + right);
-        }
-        return super.binary(left, right, Integer::sum);
+        return super.binary(left, right, Integer::sum, (l, r) -> {
+            if (needCheckExceptions && ((r > 0 && l > Integer.MAX_VALUE - r)
+                    || (r < 0 && l < Integer.MIN_VALUE - r))) {
+                throw new OverflowException("Add", l + "+" + r);
+            }
+        });
     }
 
     @Override
     public Integer subtract(Integer left, Integer right) {
-        if (needCheckExceptions && ((left >= 0 && right < 0 && left > Integer.MAX_VALUE + right)
-                || (left < 0 && right > 0 && left < Integer.MIN_VALUE + right))) {
-            throw new OverflowException("Subtract", left + "-" + right);
-        }
-        return super.binary(left, right, (x, y) -> x - y);
+        return super.binary(left, right, (x, y) -> x - y, (l, r) -> {
+            if (needCheckExceptions && ((l >= 0 && r < 0 && l > Integer.MAX_VALUE + r)
+                    || (l < 0 && r > 0 && l < Integer.MIN_VALUE + r))) {
+                throw new OverflowException("Subtract", l + "-" + r);
+            }
+        });
     }
 
     @Override
     public Integer multiply(Integer left, Integer right) { // TODO: определять переполнение без умножения
-        if (needCheckExceptions) {
-            if (left != 0 && right != 0) {
-                int ans = left * right;
-                if (ans / left != right || ans / right != left) {
-                    throw new OverflowException("Multiply", left + "*" + right);
+        return super.binary(left, right, (x, y) -> x * y, (l, r) -> {
+            if (needCheckExceptions) {
+                if (l != 0 && r != 0) {
+                    int ans = l * r;
+                    if (ans / l != r || ans / r != l) {
+                        throw new OverflowException("Multiply", l + "*" + r);
+                    }
                 }
             }
-        }
-        return super.binary(left, right, (x, y) -> x * y);
+        });
     }
 
     @Override
     public Integer divide(Integer left, Integer right) {
-        if (right == 0) {
-            throw new DivideByZeroException("Divide", left + "/" + right);
-        }
-        if (needCheckExceptions) {
-            if (left == Integer.MIN_VALUE && right == -1) {
-                throw new OverflowException("Divide", left + "/" + right);
+        return super.binary(left, right, (x, y) -> x / y, (l, r) -> {
+            if (r == 0) {
+                throw new DivideByZeroException("Divide", l + "/" + r);
             }
-        }
-        return super.binary(left, right, (x, y) -> x / y);
+            if (needCheckExceptions) {
+                if (l == Integer.MIN_VALUE && r == -1) {
+                    throw new OverflowException("Divide", l + "/" + r);
+                }
+            }
+        });
     }
 
     @Override
     public Integer negate(Integer x) {
-        if (x == Integer.MIN_VALUE && needCheckExceptions) {
-            throw new OverflowException("Negate", "-" + x);
-        }
-        return super.unary(x, y -> -y);
+        return super.unary(x, y -> -y, arg -> {
+            if (arg == Integer.MIN_VALUE && needCheckExceptions) {
+                throw new OverflowException("Negate", "-" + arg);
+            }
+            return arg;
+        });
     }
 
     @Override
     public Integer count(Integer x) {
-        return super.unary(x, Integer::bitCount);
+        return super.unary(x, Integer::bitCount, Function.identity());
     }
 
     @Override
     public Integer min(Integer left, Integer right) {
-        return super.binary(left, right, Integer::min);
+        return super.binary(left, right, Integer::min, (l, r) -> {});
     }
 
     @Override
     public Integer max(Integer left, Integer right) {
-        return super.binary(left, right, Integer::max);
+        return super.binary(left, right, Integer::max, (l, r) -> {});
     }
 }

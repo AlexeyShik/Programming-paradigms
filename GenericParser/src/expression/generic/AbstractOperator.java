@@ -8,6 +8,11 @@ interface BinaryFunction<T> {
     T apply(T left, T right);
 }
 
+@FunctionalInterface
+interface Checker<T> {
+    void checkExceptions(T left, T right);
+}
+
 public abstract class AbstractOperator<T extends Number> implements ArithmeticOperator<T> {
     protected boolean needCheckExceptions;
 
@@ -15,11 +20,13 @@ public abstract class AbstractOperator<T extends Number> implements ArithmeticOp
         return F.apply(number);
     }
 
-    protected T binary(T left, T right, @NotNull BinaryFunction<T> F) {
+    protected T binary(T left, T right, @NotNull BinaryFunction<T> F, @NotNull Checker<T> checker) {
+        checker.checkExceptions(left, right);
         return F.apply(left, right);
     }
 
-    protected T unary(T x, @NotNull Function<T, T> F) {
+    protected T unary(T x, @NotNull Function<T, T> F, @NotNull Function<T, T> checker) {
+        checker.apply(x);
         return F.apply(x);
     }
 }
