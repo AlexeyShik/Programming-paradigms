@@ -29,4 +29,8 @@ public abstract class AbstractOperator<T extends Number> implements ArithmeticOp
         checker.apply(x);
         return F.apply(x);
     }
+
+    protected String getMessage(T l, String c, T r) {
+        return new StringBuilder().append(l).append(c).append(r).toString();
+    }
 }

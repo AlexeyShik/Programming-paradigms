@@ -34,7 +34,7 @@ public class BigIntegerOperator extends AbstractOperator<BigInteger> {
     public BigInteger divide(BigInteger left, @NotNull BigInteger right) {
         return super.binary(left, right, BigInteger::divide, (l, r) -> {
             if (r.equals(new BigInteger("0"))) {
-                throw new DivideByZeroException("Divide", l + "/" + r);
+                throw new DivideByZeroException("Divide", getMessage(l, "/", r));
             }
         });
     }

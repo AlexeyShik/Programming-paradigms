@@ -33,7 +33,7 @@ public class LongOperator extends AbstractOperator<Long> {
     public Long divide(Long left, Long right) {
         return super.binary(left, right, (x, y) -> x / y, (l, r) -> {
             if (r == 0)
-                throw new DivideByZeroException("Divide", l + "/" + r);
+                throw new DivideByZeroException("Divide", getMessage(l, "/", r));
         });
     }
 

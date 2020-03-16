@@ -33,7 +33,7 @@ public class ShortOperator extends AbstractOperator<Short> {
     public Short divide(Short left, Short right) {
         return super.binary(left, right, (x, y) -> (short) (x / y), (l, r) -> {
             if (r == 0) {
-                throw new DivideByZeroException("Divide", l + "/" + r);
+                throw new DivideByZeroException("Divide", getMessage(l, "*", r));
             }
         });
     }
