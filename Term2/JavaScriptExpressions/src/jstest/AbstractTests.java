@@ -1,9 +1,9 @@
-package expression;
+package jstest;
 
-import expression.BaseJavascriptTest.Dialect;
-import expression.BaseJavascriptTest.Expr;
-import expression.BaseJavascriptTest.TExpr;
-import expression.BaseJavascriptTest.Operator;
+import jstest.BaseJavascriptTest.Dialect;
+import jstest.BaseJavascriptTest.Expr;
+import jstest.BaseJavascriptTest.TExpr;
+import jstest.BaseJavascriptTest.Operator;
 
 import java.util.*;
 import java.util.function.DoubleBinaryOperator;
@@ -46,7 +46,7 @@ public abstract class AbstractTests implements Cloneable {
     }
 
     protected AbstractExpression generateOp(final Random random, final int depth) {
-        if (random.nextInt(6) == 0 || operatorNames.isEmpty()) {
+        if (random.nextInt(6) == 0) {
             return generateP(random, depth);
         } else {
             final String name = operatorNames.get(random.nextInt(operatorNames.size()));

@@ -1,4 +1,4 @@
-package expression;
+package jstest;
 
 /**
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)

@@ -1,8 +1,8 @@
-package expression.functional;
+package jstest.functional;
 
-import expression.AbstractTests;
-import expression.JSEngine;
-import expression.Language;
+import jstest.AbstractTests;
+import jstest.JSEngine;
+import jstest.Language;
 
 /**
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)

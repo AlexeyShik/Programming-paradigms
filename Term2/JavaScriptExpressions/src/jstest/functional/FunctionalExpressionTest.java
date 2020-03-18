@@ -1,7 +1,7 @@
-package expression.functional;
+package jstest.functional;
 
 import expression.BaseTest;
-import expression.*;
+import jstest.*;
 
 import java.util.function.BiFunction;
 
@@ -27,7 +27,7 @@ public class FunctionalExpressionTest extends BaseJavascriptTest<Engine> {
     );
 
     protected FunctionalExpressionTest(final Language language, final boolean testParsing) {
-        this(new JSEngine("expression/functional/functionalExpression.js", ""), language, testParsing);
+        this(new JSEngine("functionalExpression.js", ""), language, testParsing);
     }
 
     protected FunctionalExpressionTest(final Engine engine, final Language language, final boolean testParsing) {

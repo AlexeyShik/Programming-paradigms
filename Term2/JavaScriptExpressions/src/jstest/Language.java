@@ -1,7 +1,7 @@
-package expression;
+package jstest;
 
-import expression.BaseJavascriptTest.Expr;
-import expression.BaseJavascriptTest.TExpr;
+import jstest.BaseJavascriptTest.Expr;
+import jstest.BaseJavascriptTest.TExpr;
 
 import java.util.ArrayList;
 import java.util.List;

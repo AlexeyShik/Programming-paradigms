@@ -1,4 +1,4 @@
-package expression;
+package jstest;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
