@@ -16,15 +16,39 @@ const makeOperation = (name, func) => {
     return f;
 };
 
-const cnst = c => (...values) => c;
+let CONSTANTS = new Map([]);
+const makeNumberConst = c => {
+    return (...values) => c;
+};
+const makeConst = (name, c) => {
+    let f = makeNumberConst(c);
+    CONSTANTS.set(name, f);
+    return f;
+};
+
+const cnst = c => makeNumberConst(c);
+const pi = makeConst("pi", Math.PI);
+const e = makeConst("e", Math.E);
 const variable = name => (...values) => values[VARIABLES_MAP.get(name)];
-const negate = makeOperation("-", x => -x);
-const abs = makeOperation("abs",x => Math.abs(x));
+const negate = makeOperation("negate", x => -x);
 const add = makeOperation("+",(x, y) => x + y);
 const subtract = makeOperation("-",(x, y) => x - y);
 const multiply = makeOperation("*",(x, y) => x * y);
 const divide = makeOperation("/",(x, y) => x / y);
-const iff = makeOperation("iff",(x, y, z) => x >= 0 ? y : z);
+const sum = (...other) => {
+    let ans = 0;
+    for (const elem of other) {
+        ans += elem;
+    }
+    return ans;
+};
+const avg = (...other) => sum(...other) / other.length;
+const avg5 = makeOperation("avg5", (x1, x2, x3, x4, x5) => avg(x1, x2, x3, x4, x5));
+const med = (...other) => {
+    other.sort((x, y) => x - y);
+    return other[Math.floor(other.length / 2)];
+};
+const med3 = makeOperation("med3", (x, y, z) => med(x, y, z));
 
 const example = () => {
     const expr = subtract(
@@ -61,10 +85,6 @@ const VARIABLES_MAP = new Map([]);
 for (let i = 0; i < VARIABLES.length; ++i) {
     VARIABLES_MAP.set(VARIABLES[i], i);
 }
-const CONSTANTS = new Map([
-    ["ONE", "1"],
-    ["TWO", "2"]
-]);
 
 function parse(str) {
     let pos = 0;
@@ -93,7 +113,7 @@ function parse(str) {
         }
         return str.substring(beg, pos);
     };
-    const getConst = token => cnst(Number.parseInt(CONSTANTS.has(token) ? CONSTANTS.get(token) : token));
+    const getConst = token => CONSTANTS.has(token) ? CONSTANTS.get(token) : cnst(Number.parseInt(token));
     const getOperation = token => OPERATIONS.get(token);
     const getVariable = token => variable(token);
 
