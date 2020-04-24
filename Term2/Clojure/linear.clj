@@ -1,3 +1,4 @@
+;Delay
 ;Contract
 (defn same-size? [check-size] (fn [arg] (every? (partial check-size (first arg)) arg)))
 (def same-size-2-vectors? (fn [u v] (== (count u) (count v))))
