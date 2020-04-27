@@ -97,7 +97,13 @@
    :post [(vector-of-number? %)]}
   (mapv (partial scalar v) m))
 
-(def m*m (reducer (fn [a b] (mapv (partial m*v (transpose b)) a)) matrix-of-number? (constantly true)))
+(def m*m
+  (reducer
+    (fn [a b]
+      {:pre [(matrix-of-number? a) (matrix-of-number? b) (same-size? (transpose a) b)]
+       :post [(matrix-of-number? %)]}
+      (mapv (partial m*v (transpose b)) a))
+    matrix-of-number? (constantly true)))
 
 ;Tensor
 (defn tensor-of-number? [& arg] (or (every? number? arg) (and (every? vector? arg) (apply == (mapv count arg)) (apply tensor-of-number? (apply concat [] arg)))))
