@@ -1,77 +1,107 @@
-;Delay
-;Contract
-(defn same-size? [check-size] (fn [arg] (every? (partial check-size (first arg)) arg)))
-(def same-size-2-vectors? (fn [u v] (== (count u) (count v))))
-(def same-size-vectors? (same-size? same-size-2-vectors?))
-(defn same-size-2-matrixes? [u v] (and (same-size-2-vectors? u v) (same-size-2-vectors? (first u) (first v))))
-(def same-size-matrixes? (same-size? same-size-2-matrixes?))
-(defn vector-of? [v check-type] (and (vector? v) (every? check-type v)))
-(defn vector-of-number? [v] (vector-of? v number?))
-(defn matrix-of? [m check-type] (and (vector-of? m check-type) (same-size-vectors? m)))
-(defn matrix-of-number? [m] (matrix-of? m vector-of-number?))
+;Review
 
 ;Common
-(defn reducer [func check-type check-every check-extra]
-  {:pre  [(not (nil? func)) (not (nil? check-type)) (not (nil? check-every)) (not (nil? check-extra))]
-   :post [(not (nil? %))]}
+(defn check-nil [& arg] (and (fn [x] (not (nil? x))) arg))
+
+(defn same-size? [& arg]
+  (let [c (count (first arg))]
+    (every? (fn [v] (== c (count v))) arg)))
+
+(defn something-of? [check-type]
+  {:pre [(check-nil check-type)]
+   :post [(check-nil %)]}
+  (fn [& arg] (and (every? (and vector? check-type) arg) (apply == (mapv count arg)))))
+
+(defn calc [func & arg]
+  {:pre [(or (every? number? arg) (and (every? vector? arg) (apply == (mapv count arg))))]
+   :post [(check-nil %)]}
+  (cond
+    (every? number? arg)
+    (apply func arg)
+    :else
+    (apply mapv (partial calc func) arg)))
+
+(defn element-operation [func check-type]
+  {:pre [(check-nil func check-type)]
+   :post [(check-nil %)]}
+  (letfn
+    [(check [& arg]
+     {:pre [(check-nil func check-type) (apply check-type arg)]
+      :post [(check-type %)]}
+     (apply calc func arg))]
+    :return check))
+
+(defn make-element-operation [check-type]
+  {:pre [(check-nil check-type)]
+   :post [(check-nil %)]}
+  (fn [f]
+    {:pre [(check-nil f)]
+     :post [(check-nil %)]}
+    (element-operation f check-type)))
+
+(defn reducer [func check-type check-extra]
+  {:pre  [(check-nil func check-type check-extra)]
+   :post [(check-nil %)]}
   (fn [x & arg]
-    {:pre  [(check-type x) (every? check-every arg) (check-extra x arg)]
-     :post [(not (nil? %))]}
+    {:pre  [(check-type x) (every? check-type arg) (check-extra x arg)]
+     :post [(check-nil %)]}
     (reduce func x arg)))
 
-(defn element-operation [check-every check-size]
-  {:pre  [(not (nil? check-every)) (not (nil? check-size))]
-   :post [(not (nil? %))]}
-  (fn [func]
-    {:pre  [(not (nil? func))]
-     :post [(not (nil? %))]}
-    (fn [& arg]
-      {:pre  [(every? check-every arg) (check-size arg)]
-       :post [(check-every %)]}
-      (apply mapv func arg))))
+(defn scalar-multiply [func check-type]
+  {:pre [(check-nil func check-type)]
+   :post [(check-nil %)]}
+  (fn [x & arg]
+  {:pre [(check-type x) (every? number? arg)]
+  :post [(check-type %)]}
+  (let [c (apply * arg)]
+    (mapv (fn [v] (func v c)) x))))
 
 ;Vectors
-(def vector-element-operation (element-operation vector-of-number? same-size-vectors?))
+(def vector-of-number? (something-of? (fn [v] (every? number? v))))
+(def vector-element-operation (make-element-operation vector-of-number?))
 (def v+ (vector-element-operation +))
 (def v- (vector-element-operation -))
 (def v* (vector-element-operation *))
-(def v*s (reducer (fn [v s] (mapv (partial * s) v)) vector-of-number? number? (constantly true)))
+(def v*s (scalar-multiply * vector-of-number?))
+
 (defn scalar [u v]
-  {:pre  [(vector-of-number? u) (vector-of-number? v) (same-size-2-vectors? u v)]
+  {:pre  [(vector-of-number? u) (vector-of-number? v) (same-size? u v)]
    :post [(number? %)]}
   (reduce + (v* u v)))
-(def vect (reducer (fn [u v] (letfn [(coord [i j] (- (* (get u i) (get v j)) (* (get u j) (get v i))))] (vector (coord 1 2) (- (coord 0 2)) (coord 0 1))))
-                   vector-of-number? vector-of-number? (fn [x args] (and (or (== 0 (count args)) (same-size-2-vectors? x (first args))) (same-size-vectors? args)))))
+
+(def vect
+  (reducer
+    (fn [u v]
+      {:pre [(vector-of-number? u v)]
+       :post [(vector-of-number? %)]}
+      (letfn [(diag [i j] (* (get u i) (get v j)))
+              (coord [i j] (- (diag i j) (diag j i)))]
+        (vector (coord 1 2) (- (coord 0 2)) (coord 0 1))))
+    vector-of-number? (fn [x arg] (and (== (count x) 3) (same-size? (concat x arg))))))
 
 ;Matrixes
-(def matrix-element-operation (element-operation matrix-of-number? same-size-matrixes?))
-(def m+ (matrix-element-operation v+))
-(def m- (matrix-element-operation v-))
-(def m* (matrix-element-operation v*))
+(def matrix-of-number? (something-of? (fn [x] (apply vector-of-number? x))))
+(def matrix-element-operation (make-element-operation matrix-of-number?))
+(def m+ (matrix-element-operation +))
+(def m- (matrix-element-operation -))
+(def m* (matrix-element-operation *))
+(def m*s (scalar-multiply v*s matrix-of-number?))
+
 (defn transpose [m]
   {:pre  [(matrix-of-number? m)]
    :post [(matrix-of-number? %)]}
   (apply mapv vector m))
-(def m*s (reducer (fn [m s] (mapv (fn [v] (v*s v s)) m)) matrix-of-number? number? (constantly true)))
+
 (defn m*v [m v]
-  {:pre  [(matrix-of-number? m) (vector-of-number? v) (same-size-2-vectors? (transpose m) v)]
+  {:pre  [(matrix-of-number? m) (vector-of-number? v) (same-size? (transpose m) v)]
    :post [(vector-of-number? %)]}
   (mapv (partial scalar v) m))
-(def m*m (reducer (fn [a b] (mapv (partial m*v (transpose b)) a)) matrix-of-number? matrix-of-number? (constantly true)))
+
+(def m*m (reducer (fn [a b] (mapv (partial m*v (transpose b)) a)) matrix-of-number? (constantly true)))
 
 ;Tensor
-(defn tensor? [& arg] (or (every? number? arg) (and (every? vector? arg) (apply == (mapv count arg)) (apply tensor? (apply concat [] arg)))))
-
-(defn tensor-element-operation [func]
-  (letfn [(calc [& arg]
-            {:pre [(and (apply tensor? arg) (or (every? number? arg) (and (every? vector? arg) (apply == (mapv count arg)))))]}
-            (cond
-              (every? number? arg)
-              (apply func arg)
-              :else
-              (apply mapv calc arg)))]
-  :return calc))
-
+(defn tensor-of-number? [& arg] (or (every? number? arg) (and (every? vector? arg) (apply == (mapv count arg)) (apply tensor-of-number? (apply concat [] arg)))))
+(def tensor-element-operation (make-element-operation tensor-of-number?))
 (def t+ (tensor-element-operation +))
 (def t- (tensor-element-operation -))
 (def t* (tensor-element-operation *))
