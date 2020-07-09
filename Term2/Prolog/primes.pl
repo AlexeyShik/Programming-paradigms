@@ -1,4 +1,3 @@
-%Review, [4..6] times more, than benchmark
 forj(J, I, N) :- J > N, !.
 forj(J, I, N) :- assert(composite(J)), J1 is J + I, forj(J1, I, N).
 fori(I, II, N) :- II > N, !.
