@@ -1,4 +1,3 @@
-%Review
 split([], _, [], [], []) :- !.
 split(node(K, _, _, TL, TR), K, TL, node(K, _, _, [], []), TR) :- !.
 split(node(K, V, Y, TL, TR), X, L, M, R) :- (X < K, split(TL, X, L, M, NTR), R = node(K, V, Y, NTR, TR) ; 	X > K, split(TR, X, NTL, M, R), L = node(K, V, Y, TL, NTL)).
