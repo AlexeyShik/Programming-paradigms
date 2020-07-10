@@ -8,7 +8,7 @@
  - [Expression parser](https://github.com/AlexeyShik/Programming-paradigms/tree/master/Term2/ArithmeticExpressionParser/src/expression)  
  - [Programming by contract](https://github.com/AlexeyShik/Programming-paradigms/tree/master/Term2/ContractProgramming/src/search)  
  - [Contract queue](https://github.com/AlexeyShik/Programming-paradigms/tree/master/Term2/ContractQueue/src/queue)  
- - [Abstract queue](https://github.com/AlexeyShik/Programming-paradigms/tree/master/Term2/AbstractQueue/src)  
+ - [Abstract queue](https://github.com/AlexeyShik/Programming-paradigms/tree/master/Term2/AbstractQueue/src/queue)  
  - [Generic parser](https://github.com/AlexeyShik/Programming-paradigms/tree/master/Term2/GenericParser/src/expression)  
  - [JavaScript homeworks](https://github.com/AlexeyShik/Programming-paradigms/tree/master/Term2/JavaScriptExpressions/src)  
  - [Clojure homeworks](https://github.com/AlexeyShik/Programming-paradigms/tree/master/Term2/Clojure)  
