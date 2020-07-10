@@ -1,5 +1,3 @@
-;Review
-
 ;Common
 (defn check-nil [& arg] (and (fn [x] (not (nil? x))) arg))
 
