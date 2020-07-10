@@ -1,7 +1,7 @@
 ## First Term (the most interesting homeworks)  
  - [Competitive programming](https://github.com/AlexeyShik/Programming-paradigms/tree/master/Term1/CompetitiveProgrammingJava/src)  
  - [MarkUp](https://github.com/AlexeyShik/Programming-paradigms/tree/master/Term1/Markup/markup/src/markUp)  
- - [Markdown to HTML](https://github.com/AlexeyShik/Programming-paradigms/blob/master/Term1/Md2Html/src/Md2Html.java)  
+ - [Markdown to HTML](https://github.com/AlexeyShik/Programming-paradigms/blob/master/Term1/Md2Html/src)  
  - [Expression](https://github.com/AlexeyShik/Programming-paradigms/tree/master/Term1/Expression/src/expression)  
  - [nmk Game](https://github.com/AlexeyShik/Programming-paradigms/tree/master/Term1/nmkGame/src)
 ## Second Term (all homeworks)
