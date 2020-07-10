@@ -1,5 +1,5 @@
 "use strict";
-//  HW8 - review
+//  HW7 + HW8
 
 function makeInheritance(object, prototype) {
     object.prototype = Object.create(prototype);
@@ -251,9 +251,6 @@ function parsePostfix(str) {
 function parsePrefix(str) {
     return parsePrefixOrPostfix(str, 'prefix');
 }
-
-// :NOTE: too many code for parser (it should be up to 50-60 lines)
-// :MyNote: fixed, now ~40 lines)
 
 function parsePrefixOrPostfix(str, mode) {
     const source = new Source(str);
